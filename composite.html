@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Composite Filters Lab – Network Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="network-analysis/css/network.css">
+<style>
+  .block-select {
+    width: 100%;
+    background: var(--surface2);
+    color: var(--accent);
+    border: 1px solid rgba(0,255,136,0.3);
+    padding: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    border-radius: 4px;
+    outline: none;
+    margin-bottom: 15px;
+  }
+  .block-select:focus {
+    border-color: var(--accent);
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">← DASHBOARD</a>
+  <div class="nav-logo" style="color:var(--accent);">MODULE 08: COMPOSITE FILTERS</div>
+</nav>
+
+<div class="hud">
+  <div class="hud-item student-name-display" style="color:#00ff88;">PLAYER</div>
+  <div class="hud-item">SCORE: <span id="hud-score">0</span> XP</div>
+  <div class="hud-item">LEVEL: <span id="hud-level">1</span></div>
+  <div class="hud-timer" id="hud-timer">00:00</div>
+</div>
+
+<div class="lab-container">
+  
+  <div class="controls-panel">
+    <div class="panel-title">Filter Cascade Builder</div>
+    
+    <div class="mission-box">
+      <h3>MISSION <span id="mission-status"></span></h3>
+      <p id="mission-text">Build a <strong>Bandpass Filter</strong> passing exactly <strong>1 kHz to 5 kHz</strong> by cascading two stages.</p>
+    </div>
+
+    <div class="control-group">
+      <label>STAGE 1</label>
+      <select class="block-select" id="stage1">
+        <option value="bypass">Bypass (Wire)</option>
+        <option value="lpf_1k">Low-Pass Filter (fc = 1 kHz)</option>
+        <option value="lpf_5k">Low-Pass Filter (fc = 5 kHz)</option>
+        <option value="hpf_1k">High-Pass Filter (fc = 1 kHz)</option>
+        <option value="hpf_5k">High-Pass Filter (fc = 5 kHz)</option>
+        <option value="att_10">Attenuator (-10 dB)</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>STAGE 2</label>
+      <select class="block-select" id="stage2">
+        <option value="bypass">Bypass (Wire)</option>
+        <option value="lpf_1k">Low-Pass Filter (fc = 1 kHz)</option>
+        <option value="lpf_5k">Low-Pass Filter (fc = 5 kHz)</option>
+        <option value="hpf_1k">High-Pass Filter (fc = 1 kHz)</option>
+        <option value="hpf_5k">High-Pass Filter (fc = 5 kHz)</option>
+        <option value="att_10">Attenuator (-10 dB)</option>
+      </select>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn btn-primary" id="btn-submit" style="flex:1;">TEST COMPOSITE</button>
+      <button class="btn btn-hint" id="btn-hint" style="flex:1;">GET HINT</button>
+    </div>
+  </div>
+
+  <div class="simulation-area">
+    <div style="display:flex; justify-content:center; align-items:center; height:100px; border-bottom:1px solid rgba(255,255,255,0.05); gap:20px; font-family:'Space Mono'; color:var(--text);">
+      <div>IN</div>
+      <div style="width:50px; height:2px; background:var(--accent);"></div>
+      <div id="block1-vis" style="padding:10px 20px; border:2px solid var(--accent); border-radius:4px; background:var(--surface2);">STAGE 1</div>
+      <div style="width:50px; height:2px; background:var(--accent);"></div>
+      <div id="block2-vis" style="padding:10px 20px; border:2px solid var(--accent); border-radius:4px; background:var(--surface2);">STAGE 2</div>
+      <div style="width:50px; height:2px; background:var(--accent);"></div>
+      <div>OUT</div>
+    </div>
+    
+    <div class="canvas-container" style="flex:1;">
+      <canvas id="bodeCanvas"></canvas>
+    </div>
+    <div id="feedback-panel" class="feedback-panel"></div>
+  </div>
+
+</div>
+
+<script src="network-analysis/js/network-core.js"></script>
+<script src="network-analysis/js/scoring.js?v=2"></script>
+<script src="network-analysis/js/hints.js"></script>
+<script src="network-analysis/js/composite.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="js/db.js?v=8"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twin-T Notch Filter Lab – Network Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="network-analysis/css/network.css">
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">← DASHBOARD</a>
+  <div class="nav-logo" style="color:var(--accent);">MODULE 07: TWIN-T NOTCH FILTER</div>
+</nav>
+
+<div class="hud">
+  <div class="hud-item student-name-display" style="color:#00ff88;">PLAYER</div>
+  <div class="hud-item">SCORE: <span id="hud-score">0</span> XP</div>
+  <div class="hud-item">LEVEL: <span id="hud-level">1</span></div>
+  <div class="hud-timer" id="hud-timer">00:00</div>
+</div>
+
+<div class="lab-container">
+  
+  <div class="controls-panel">
+    <div class="panel-title">Twin-T Network</div>
+    
+    <div class="mission-box">
+      <h3>MISSION <span id="mission-status"></span></h3>
+      <p id="mission-text">Design a notch filter to reject exactly <strong>1000 Hz</strong> interference.</p>
+    </div>
+
+    <!-- Circuit Schematic SVG -->
+    <svg width="100%" height="150" viewBox="0 0 300 150" style="background:var(--surface2); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+      <!-- Input to Top T -->
+      <path d="M 20 50 L 50 50 L 60 40 L 80 60 L 100 40 L 120 60 L 130 50 L 170 50 L 180 40 L 200 60 L 220 40 L 240 60 L 250 50 L 280 50" stroke="rgba(0,255,136,0.6)" stroke-width="3" fill="none"/>
+      <!-- Shunt of Top T (C/2) -->
+      <path d="M 150 50 L 150 70 M 140 70 L 160 70 M 140 80 L 160 80 M 150 80 L 150 130" stroke="rgba(0,255,136,0.6)" stroke-width="3" fill="none"/>
+      
+      <!-- Bottom T -->
+      <path d="M 40 50 L 40 100 L 90 100 M 100 90 L 100 110 M 110 90 L 110 110 M 120 100 L 180 100 M 190 90 L 190 110 M 200 90 L 200 110 M 210 100 L 260 100 L 260 50" stroke="rgba(0,255,136,0.6)" stroke-width="3" fill="none"/>
+      <!-- Shunt of Bottom T (R/2) -->
+      <path d="M 150 100 L 150 110 L 145 115 L 155 120 L 145 125 L 150 130" stroke="rgba(0,255,136,0.6)" stroke-width="3" fill="none"/>
+      
+      <!-- Ground line -->
+      <path d="M 130 130 L 170 130 M 140 135 L 160 135 M 145 140 L 155 140" stroke="rgba(0,255,136,0.6)" stroke-width="2" fill="none"/>
+
+      <text x="90" y="35" fill="var(--accent)" font-family="Space Mono" font-size="10">R</text>
+      <text x="210" y="35" fill="var(--accent)" font-family="Space Mono" font-size="10">R</text>
+      <text x="175" y="70" fill="var(--accent)" font-family="Space Mono" font-size="10">2C</text>
+      
+      <text x="105" y="85" fill="var(--accent)" font-family="Space Mono" font-size="10">C</text>
+      <text x="195" y="85" fill="var(--accent)" font-family="Space Mono" font-size="10">C</text>
+      <text x="175" y="125" fill="var(--accent)" font-family="Space Mono" font-size="10">R/2</text>
+    </svg>
+
+    <div class="control-group">
+      <label><span>Resistance (R) - O</span> <span id="val-R" style="display:none;">1000 Ω</span></label>
+      <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-R', -1)">-</button><input type="number" id="slider-R" min="100" max="10000" step="10" value="1000"><button type="button" class="btn-step" onclick="stepInputValue('slider-R', 1)">+</button></div>
+    </div>
+    
+    <div class="control-group">
+      <label><span>Capacitance (C) - �F</span> <span id="val-C" style="display:none;">0.1 µF</span></label>
+      <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-C', -1)">-</button><input type="number" id="slider-C" min="0.01" max="10" step="0.01" value="0.1"><button type="button" class="btn-step" onclick="stepInputValue('slider-C', 1)">+</button></div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <button class="btn btn-primary" id="btn-submit" style="flex:1;">TEST NOTCH</button>
+      <button class="btn btn-hint" id="btn-hint" style="flex:1;">GET HINT</button>
+    </div>
+
+    <div class="control-group" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+      <label>Measured Notch Frequency:</label>
+      <div style="font-family:'Orbitron', monospace; font-size:1.4rem; color:var(--text); text-align:center; padding:10px 0;">
+        f<sub>n</sub> = <span id="val-fn" style="display:none;">1591.5</span> Hz
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="simulation-area">
+    <div class="canvas-container">
+      <canvas id="bodeCanvas"></canvas>
+    </div>
+    <div id="feedback-panel" class="feedback-panel"></div>
+  </div>
+
+</div>
+
+<script src="network-analysis/js/network-core.js"></script>
+<script src="network-analysis/js/scoring.js?v=2"></script>
+<script src="network-analysis/js/hints.js"></script>
+<script src="network-analysis/js/twin-t.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="js/db.js?v=8"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

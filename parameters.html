@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Parameters Matrix – Network Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="network-analysis/css/network.css">
+<style>
+  .matrix {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 10px 20px;
+    background: var(--surface2);
+    border-left: 2px solid var(--text);
+    border-right: 2px solid var(--text);
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.2rem;
+    color: var(--accent);
+  }
+  .matrix div { text-align: center; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">← DASHBOARD</a>
+  <div class="nav-logo" style="color:var(--accent);">MODULE 03: NETWORK PARAMETERS</div>
+</nav>
+
+<div class="hud">
+  <div class="hud-item student-name-display" style="color:#00ff88;">PLAYER</div>
+  <div class="hud-item">SCORE: <span id="hud-score">0</span> XP</div>
+  <div class="hud-item">LEVEL: <span id="hud-level">1</span></div>
+  <div class="hud-timer" id="hud-timer">00:00</div>
+</div>
+
+<div class="lab-container">
+  
+  <div class="controls-panel">
+    <div class="panel-title">Z-Parameter Synthesis</div>
+    
+    <div class="mission-box">
+      <h3>MISSION <span id="mission-status"></span></h3>
+      <p id="mission-text">Adjust the T-Network to exactly match the <strong>Target Z-Matrix</strong>.</p>
+    </div>
+
+    <div class="control-group">
+      <label><span>Z₁ (Series Arm 1)</span> <span id="val-z1" style="display:none;">100 Ω</span></label>
+      <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-z1', -1)">-</button><input type="number" id="slider-z1" min="10" max="500" step="10" value="100"><button type="button" class="btn-step" onclick="stepInputValue('slider-z1', 1)">+</button></div>
+    </div>
+    
+    <div class="control-group">
+      <label><span>Z₂ (Series Arm 2)</span> <span id="val-z2" style="display:none;">100 Ω</span></label>
+      <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-z2', -1)">-</button><input type="number" id="slider-z2" min="10" max="500" step="10" value="100"><button type="button" class="btn-step" onclick="stepInputValue('slider-z2', 1)">+</button></div>
+    </div>
+
+    <div class="control-group">
+      <label><span>Z₃ (Shunt Arm)</span> <span id="val-z3" style="display:none;">100 Ω</span></label>
+      <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-z3', -1)">-</button><input type="number" id="slider-z3" min="10" max="500" step="10" value="100"><button type="button" class="btn-step" onclick="stepInputValue('slider-z3', 1)">+</button></div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <button class="btn btn-primary" id="btn-submit" style="flex:1;">VERIFY MATRIX</button>
+      <button class="btn btn-hint" id="btn-hint" style="flex:1;">GET HINT</button>
+    </div>
+  </div>
+
+  <div class="simulation-area">
+    <div style="display:flex; justify-content:space-around; align-items:center; height: 150px; border-bottom:1px solid rgba(255,255,255,0.05);">
+      <div style="text-align:center;">
+        <div style="color:var(--muted); font-size:0.9rem; margin-bottom:10px;">TARGET [Z] MATRIX</div>
+        <div class="matrix" style="color:var(--accent-yellow);">
+          <div id="tgt-11">0</div><div id="tgt-12">0</div>
+          <div id="tgt-21">0</div><div id="tgt-22">0</div>
+        </div>
+      </div>
+      
+      <div style="text-align:center;">
+        <div style="color:var(--muted); font-size:0.9rem; margin-bottom:10px;">YOUR [Z] MATRIX</div>
+        <div class="matrix" id="your-matrix">
+          <div id="cur-11">0</div><div id="cur-12">0</div>
+          <div id="cur-21">0</div><div id="cur-22">0</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="canvas-container" style="flex:1;">
+      <canvas id="circuitCanvas"></canvas>
+    </div>
+    <div id="feedback-panel" class="feedback-panel"></div>
+  </div>
+
+</div>
+
+<script src="network-analysis/js/network-core.js"></script>
+<script src="network-analysis/js/scoring.js?v=2"></script>
+<script src="network-analysis/js/hints.js"></script>
+<script src="network-analysis/js/parameters.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="js/db.js?v=8"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
