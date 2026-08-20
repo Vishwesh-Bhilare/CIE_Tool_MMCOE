@@ -224,6 +224,12 @@
       color: #1f2937;
       margin-bottom: 5px;
   }
+  .section-title { margin: 28px 0 12px; font-size: 1.2rem; }
+  @media(max-width:760px){
+    body{padding:16px;} .admin-header,.admin-header>div,.exam-controls,.dashboard-grid{flex-direction:column;align-items:stretch;}
+    .dashboard-grid{display:flex;} .stat-card{min-width:0;} table{display:block;overflow-x:auto;white-space:nowrap;}
+    .exam-controls{gap:12px;} .btn-return{text-align:center;} h1{font-size:1.35rem;}
+  }
 </style>
 </head>
 <body>
@@ -279,6 +285,14 @@
   <tbody id="table-body">
     <!-- Rows injected via JS -->
   </tbody>
+</table>
+
+<h2 class="section-title">Test Results</h2>
+<table id="test-results-table" style="display:none;">
+  <thead>
+    <tr><th>Submitted</th><th>Student Name</th><th>Email</th><th>Roll No</th><th>Status</th><th>Score</th></tr>
+  </thead>
+  <tbody id="test-results-body"></tbody>
 </table>
 
 <!-- IMAGE MODAL -->
@@ -375,6 +389,7 @@
           document.getElementById('loading').style.display = 'none';
           document.getElementById('leaderboard-table').style.display = 'table';
           document.getElementById('stat-labs').textContent = rows.length;
+          await loadTestResults();
 
           const studentsData = {};
           rows.forEach((data) => {
@@ -420,9 +435,33 @@
           });
       }
 
+      async function loadTestResults() {
+          const { data, error } = await supabaseClient
+              .from('test_results_view')
+              .select('*')
+              .neq('status', 'in_progress')
+              .order('submitted_at', { ascending: false });
+          if (error) { console.error('Error fetching test results:', error); return; }
+          const table = document.getElementById('test-results-table');
+          const tbody = document.getElementById('test-results-body');
+          table.style.display = 'table';
+          tbody.innerHTML = (data || []).map((row) => `
+            <tr>
+              <td style="color:var(--text-muted);font-size:0.85rem;">${row.submitted_at ? new Date(row.submitted_at).toLocaleString() : 'N/A'}</td>
+              <td style="font-weight:600;">${row.student_name}</td>
+              <td style="color:var(--text-muted);font-size:0.85rem;">${row.student_email || 'N/A'}</td>
+              <td style="color:var(--primary);font-weight:500;">${row.roll_id}</td>
+              <td>${String(row.status).replace('_', ' ')}</td>
+              <td><span class="badge ${row.score === row.max_score ? 'high' : row.score > 0 ? 'med' : 'low'}">${row.score}/${row.max_score}</span></td>
+            </tr>`).join('');
+      }
+
       await loadDashboard();
       supabaseClient.channel('admin_scores_changes')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'scores' }, loadDashboard)
+        .subscribe();
+      supabaseClient.channel('admin_test_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'test_attempts' }, loadTestResults)
         .subscribe();
   });
 
