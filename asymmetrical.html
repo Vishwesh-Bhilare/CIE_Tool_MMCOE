@@ -23,10 +23,10 @@
 </div>
 
 <div class="lab-container">
-  
+
   <div class="controls-panel">
     <div class="panel-title">Pi-Network Balancer</div>
-    
+
     <div class="mission-box">
       <h3>MISSION <span id="mission-status"></span></h3>
       <p id="mission-text">Transform the asymmetrical Pi-Network into a <strong>symmetrical</strong> one with Z₀ = <strong>300 Ω</strong>.</p>
@@ -38,13 +38,13 @@
       <path d="M 20 40 L 80 40" stroke="rgba(0,255,136,0.6)" stroke-width="3" fill="none"/>
       <!-- Shunt ZA -->
       <path d="M 80 40 L 80 60 M 70 70 L 90 70 M 70 80 L 90 80 M 70 90 L 90 90 M 80 100 L 80 120" stroke="rgba(0,255,136,0.6)" id="path-za" stroke-width="3" fill="none"/>
-      
+
       <!-- Series ZB -->
       <path d="M 80 40 L 100 40 L 110 30 L 130 50 L 150 30 L 170 50 L 190 30 L 200 40 L 220 40" stroke="rgba(0,255,136,0.6)" id="path-zb" stroke-width="3" fill="none"/>
 
       <!-- Shunt ZC -->
       <path d="M 220 40 L 220 60 M 210 70 L 230 70 M 210 80 L 230 80 M 210 90 L 230 90 M 220 100 L 220 120" stroke="rgba(0,255,136,0.6)" id="path-zc" stroke-width="3" fill="none"/>
-      
+
       <!-- Output from Top -->
       <path d="M 220 40 L 280 40" stroke="rgba(0,255,136,0.6)" stroke-width="3" fill="none"/>
 
@@ -60,7 +60,7 @@
       <label><span>Zᴀ (Input Shunt)</span> <span id="val-za" style="display:none;">100 Ω</span></label>
       <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-za', -1)">-</button><input type="number" id="slider-za" min="50" max="1000" step="10" value="100"><button type="button" class="btn-step" onclick="stepInputValue('slider-za', 1)">+</button></div>
     </div>
-    
+
     <div class="control-group">
       <label><span>Zʙ (Series Arm)</span> <span id="val-zb" style="display:none;">200 Ω</span></label>
       <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-zb', -1)">-</button><input type="number" id="slider-zb" min="50" max="1000" step="10" value="200"><button type="button" class="btn-step" onclick="stepInputValue('slider-zb', 1)">+</button></div>
@@ -90,10 +90,9 @@
 <script src="network-analysis/js/scoring.js?v=2"></script>
 <script src="network-analysis/js/hints.js"></script>
 <script src="network-analysis/js/asymmetrical.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="js/db.js?v=8"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/db.js?v=9"></script>
 <script src="js/auth.js"></script>
 </body>
 </html>
