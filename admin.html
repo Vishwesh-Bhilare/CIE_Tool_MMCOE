@@ -16,9 +16,9 @@
     --success: #10b981;
     --warning: #f59e0b;
   }
-  
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  
+
   body {
     background-color: var(--bg);
     color: var(--text);
@@ -237,7 +237,7 @@
           <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">MINS</span>
           <button id="btn-start-timer" class="btn-start">▶ START TEST</button>
         </div>
-        
+
         <div class="timer-display" id="timer-countdown">--:--</div>
 
         <div style="display:flex; align-items:center; gap:8px; border-left: 2px solid var(--border); padding-left:15px;">
@@ -289,180 +289,143 @@
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="js/db.js?v=8"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/db.js?v=9"></script>
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
-      if (!window.db) {
-          document.getElementById('loading').textContent = "ERROR: Could not connect to database.";
-          document.getElementById('loading').style.color = "red";
+      if (!window.supabaseClient) {
+          document.getElementById('loading').textContent = 'ERROR: Could not connect to database.';
+          document.getElementById('loading').style.color = 'red';
           return;
       }
 
-      // Listen to config/global for toggle switch & timer
-      const configRef = db.collection('config').doc('global');
       const toggle = document.getElementById('accept-toggle');
       const statusText = document.getElementById('accept-status');
       const btnStart = document.getElementById('btn-start-timer');
       const timerDisplay = document.getElementById('timer-countdown');
       const timerInput = document.getElementById('timer-minutes');
-      
       let countdownInterval;
 
-      configRef.get().then(doc => {
-          if(!doc.exists) configRef.set({ acceptingResponses: true, examEndTime: null });
-      });
+      const renderConfig = (data) => {
+          const isAccepting = !!data?.accepting_responses;
+          const endTime = data?.exam_end_time ? new Date(data.exam_end_time).getTime() : null;
+          toggle.checked = isAccepting;
+          statusText.textContent = isAccepting ? 'ON' : 'OFF';
+          statusText.className = `status-text ${isAccepting ? 'status-on' : 'status-off'}`;
 
-      configRef.onSnapshot(doc => {
-          if (doc.exists) {
-              const data = doc.data();
-              const isAccepting = data.acceptingResponses;
-              const endTime = data.examEndTime;
-              
-              toggle.checked = isAccepting;
-              if (isAccepting) {
-                  statusText.textContent = "ON";
-                  statusText.className = "status-text status-on";
-              } else {
-                  statusText.textContent = "OFF";
-                  statusText.className = "status-text status-off";
-              }
-              
-              clearInterval(countdownInterval);
-              if (isAccepting && endTime && endTime > Date.now()) {
-                  countdownInterval = setInterval(() => {
-                      const remaining = endTime - Date.now();
-                      if (remaining <= 0) {
-                          clearInterval(countdownInterval);
-                          timerDisplay.textContent = "00:00";
-                          timerDisplay.style.color = "var(--warning)";
-                          configRef.update({ acceptingResponses: false });
-                      } else {
-                          const m = Math.floor(remaining / 60000);
-                          const s = Math.floor((remaining % 60000) / 1000);
-                          timerDisplay.textContent = m + ":" + s.toString().padStart(2, '0');
-                          timerDisplay.style.color = "var(--primary)";
-                      }
-                  }, 1000);
-              } else if (endTime && endTime <= Date.now()) {
-                  timerDisplay.textContent = "ENDED";
-                  timerDisplay.style.color = "var(--warning)";
-              } else {
-                  timerDisplay.textContent = "--:--";
-                  timerDisplay.style.color = "var(--text-muted)";
-              }
+          clearInterval(countdownInterval);
+          if (isAccepting && endTime && endTime > Date.now()) {
+              countdownInterval = setInterval(async () => {
+                  const remaining = endTime - Date.now();
+                  if (remaining <= 0) {
+                      clearInterval(countdownInterval);
+                      timerDisplay.textContent = '00:00';
+                      timerDisplay.style.color = 'var(--warning)';
+                      await supabaseClient.from('exam_config').update({ accepting_responses: false }).eq('id', 1);
+                  } else {
+                      const m = Math.floor(remaining / 60000);
+                      const sec = Math.floor((remaining % 60000) / 1000);
+                      timerDisplay.textContent = `${m}:${sec.toString().padStart(2, '0')}`;
+                      timerDisplay.style.color = 'var(--primary)';
+                  }
+              }, 1000);
+          } else if (endTime && endTime <= Date.now()) {
+              timerDisplay.textContent = 'ENDED';
+              timerDisplay.style.color = 'var(--warning)';
+          } else {
+              timerDisplay.textContent = '--:--';
+              timerDisplay.style.color = 'var(--text-muted)';
           }
+      };
+
+      const loadConfig = async () => renderConfig(await window.getExamConfig());
+      await loadConfig();
+      supabaseClient.channel('admin_exam_config_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'exam_config' }, payload => renderConfig(payload.new))
+        .subscribe();
+
+      toggle.addEventListener('change', async (e) => {
+          const { error } = await supabaseClient.from('exam_config').update({ accepting_responses: e.target.checked, exam_end_time: null }).eq('id', 1);
+          if (error) console.error('Error updating config:', error);
       });
 
-      toggle.addEventListener('change', (e) => {
-          configRef.update({ acceptingResponses: e.target.checked, examEndTime: null })
-              .catch(err => console.error("Error updating config:", err));
+      btnStart.addEventListener('click', async () => {
+          const mins = parseInt(timerInput.value, 10) || 30;
+          const examEndTime = new Date(Date.now() + (mins * 60000)).toISOString();
+          const { error } = await supabaseClient.from('exam_config').update({ accepting_responses: true, exam_end_time: examEndTime }).eq('id', 1);
+          if (error) console.error('Error starting exam:', error);
       });
 
-      btnStart.addEventListener('click', () => {
-          const mins = parseInt(timerInput.value) || 30;
-          const endTime = Date.now() + (mins * 60000);
-          configRef.update({ acceptingResponses: true, examEndTime: endTime })
-              .catch(err => console.error("Error starting exam:", err));
-      });
+      async function loadDashboard() {
+          const { count: studentCount } = await supabaseClient.from('students').select('*', { count: 'exact', head: true });
+          document.getElementById('stat-students').textContent = studentCount || 0;
 
-      // Fetch students count asynchronously so it doesn't block the dashboard
-      db.collection("students").get().then(studentsSnap => {
-          document.getElementById('stat-students').textContent = studentsSnap.size;
-      }).catch(err => {
-          console.warn("Could not load total student count.", err);
-      });
+          const { data: rows, error } = await supabaseClient
+              .from('leaderboard_view')
+              .select('*')
+              .order('created_at', { ascending: false });
 
-      // Listen for real-time leaderboard updates
-      db.collection("leaderboard")
-        .orderBy("timestamp", "desc")
-        .onSnapshot((snapshot) => {
-            document.getElementById('loading').style.display = "none";
-            document.getElementById('leaderboard-table').style.display = "table";
-            
-            document.getElementById('stat-labs').textContent = snapshot.size;
+          if (error) {
+              console.error('Error fetching leaderboard:', error);
+              document.getElementById('loading').textContent = 'ERROR reading from database.';
+              return;
+          }
 
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = ''; // Clear table
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('leaderboard-table').style.display = 'table';
+          document.getElementById('stat-labs').textContent = rows.length;
 
-            // Aggregate data by Roll ID
-            const studentsData = {};
-            
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const roll = data.rollId || "UNKNOWN";
-                
-                if (!studentsData[roll]) {
-                    studentsData[roll] = {
-                        name: data.studentName,
-                        email: data.studentEmail || "N/A",
-                        rollId: roll,
-                        labsCompleted: 0,
-                        totalScore: 0,
-                        games: [],
-                        latestTime: data.timestamp ? data.timestamp.toDate() : new Date()
-                    };
-                }
-                
-                studentsData[roll].labsCompleted += 1;
-                studentsData[roll].totalScore += (data.score || 0);
-                
-                const gName = data.game ? data.game.toUpperCase() : "UNKNOWN";
-                
-                // Format the game string to include a clickable button if an image exists
-                let gameDisplayStr = gName;
-                if (data.calculationImage) {
-                    gameDisplayStr = `${gName} <span style="cursor:pointer; color:var(--primary); font-weight:bold; background:#e0e7ff; padding:2px 6px; border-radius:4px; font-size:0.7rem;" onclick="window.showCalculation('${data.calculationImage}')">[🖼️ View Math]</span>`;
-                }
+          const studentsData = {};
+          rows.forEach((data) => {
+              const roll = data.roll_id || 'UNKNOWN';
+              if (!studentsData[roll]) {
+                  studentsData[roll] = {
+                      name: data.student_name,
+                      email: data.student_email || 'N/A',
+                      rollId: roll,
+                      labsCompleted: 0,
+                      totalScore: 0,
+                      games: [],
+                      latestTime: data.created_at ? new Date(data.created_at) : new Date()
+                  };
+              }
+              studentsData[roll].labsCompleted += 1;
+              studentsData[roll].totalScore += Number(data.score || 0);
+              const gName = (data.game_title || data.game_slug || 'UNKNOWN').toUpperCase();
+              let gameDisplayStr = gName;
+              if (data.calculation_image) {
+                  gameDisplayStr = `${gName} <span style="cursor:pointer; color:var(--primary); font-weight:bold; background:#e0e7ff; padding:2px 6px; border-radius:4px; font-size:0.7rem;" onclick="window.showCalculation('${data.calculation_image}')">[🖼️ View Math]</span>`;
+              }
+              if (!studentsData[roll].games.find(g => g.includes(gName))) studentsData[roll].games.push(gameDisplayStr);
+              const docTime = data.created_at ? new Date(data.created_at) : new Date();
+              if (docTime > studentsData[roll].latestTime) studentsData[roll].latestTime = docTime;
+          });
 
-                if (!studentsData[roll].games.find(g => g.includes(gName))) {
-                    studentsData[roll].games.push(gameDisplayStr);
-                } else if (data.calculationImage) {
-                    const idx = studentsData[roll].games.findIndex(g => g.includes(gName));
-                    studentsData[roll].games[idx] = gameDisplayStr;
-                }
-                
-                if (data.timestamp) {
-                    const docTime = data.timestamp.toDate();
-                    if (docTime > studentsData[roll].latestTime) {
-                        studentsData[roll].latestTime = docTime;
-                    }
-                }
-            });
+          const tbody = document.getElementById('table-body');
+          tbody.innerHTML = '';
+          Object.values(studentsData).sort((a, b) => b.totalScore - a.totalScore).forEach((data) => {
+              let badgeClass = 'low';
+              if (data.totalScore >= 1500) badgeClass = 'high';
+              else if (data.totalScore >= 500) badgeClass = 'med';
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td style="color:var(--text-muted); font-size:0.85rem;">${data.latestTime.toLocaleString()}</td>
+                <td style="font-weight:600; color:var(--text);">${data.name}</td>
+                <td style="color:var(--text-muted); font-size:0.85rem;">${data.email}</td>
+                <td style="color:var(--primary); font-weight:500;">${data.rollId}</td>
+                <td>${data.labsCompleted} Labs<br><span style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; display:block;">${data.games.join(', ')}</span></td>
+                <td><span class="badge ${badgeClass}">${data.totalScore} XP</span></td>`;
+              tbody.appendChild(tr);
+          });
+      }
 
-            // Convert to array and sort by Total Score (descending)
-            const sortedStudents = Object.values(studentsData).sort((a, b) => b.totalScore - a.totalScore);
-
-            sortedStudents.forEach((data) => {
-                const dateStr = data.latestTime.toLocaleString();
-
-                // Score Badge
-                let badgeClass = "low";
-                if (data.totalScore >= 1500) badgeClass = "high";
-                else if (data.totalScore >= 500) badgeClass = "med";
-                
-                const gamesList = data.games.join(', ');
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                  <td style="color:var(--text-muted); font-size:0.85rem;">${dateStr}</td>
-                  <td style="font-weight:600; color:var(--text);">${data.name}</td>
-                  <td style="color:var(--text-muted); font-size:0.85rem;">${data.email}</td>
-                  <td style="color:var(--primary); font-weight:500;">${data.rollId}</td>
-                  <td>${data.labsCompleted} Labs<br><span style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; display:block;">${gamesList}</span></td>
-                  <td><span class="badge ${badgeClass}">${data.totalScore} XP</span></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }, (error) => {
-            console.error("Error fetching leaderboard: ", error);
-            document.getElementById('loading').textContent = "ERROR reading from database.";
-        });
+      await loadDashboard();
+      supabaseClient.channel('admin_scores_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'scores' }, loadDashboard)
+        .subscribe();
   });
 
-  // Global function to show modal
   window.showCalculation = function(base64Image) {
       document.getElementById('modal-img').src = base64Image;
       document.getElementById('image-modal').style.display = 'flex';

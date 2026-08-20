@@ -23,10 +23,10 @@
 </div>
 
 <div class="lab-container">
-  
+
   <div class="controls-panel">
     <div class="panel-title">T-Network Balancer</div>
-    
+
     <div class="mission-box">
       <h3>MISSION <span id="mission-status"></span></h3>
       <p id="mission-text">Make the network <strong>symmetrical</strong> and achieve a characteristic impedance (Z₀) of <strong>500 Ω</strong>.</p>
@@ -40,14 +40,14 @@
       <path d="M 150 50 L 160 50 L 170 40 L 190 60 L 210 40 L 220 50 L 280 50" stroke="rgba(0,255,136,0.6)" id="path-z2" stroke-width="3" fill="none"/>
       <!-- Shunt Z3 -->
       <path d="M 150 50 L 150 70 M 140 80 L 160 80 M 140 90 L 160 90 M 140 100 L 160 100 M 150 110 L 150 130" stroke="rgba(0,255,136,0.6)" id="path-z3" stroke-width="3" fill="none"/>
-      
+
       <!-- Ground line -->
       <path d="M 20 130 L 280 130 M 140 135 L 160 135 M 145 140 L 155 140" stroke="rgba(0,255,136,0.6)" stroke-width="2" fill="none"/>
 
       <text x="110" y="30" fill="var(--text)" font-family="Space Mono" font-size="12">Z₁ = <tspan id="lbl-z1">100</tspan> Ω</text>
       <text x="190" y="30" fill="var(--text)" font-family="Space Mono" font-size="12">Z₂ = <tspan id="lbl-z2">200</tspan> Ω</text>
       <text x="175" y="95" fill="var(--text)" font-family="Space Mono" font-size="12">Z₃ = <tspan id="lbl-z3">100</tspan> Ω</text>
-      
+
       <text x="20" y="35" fill="var(--muted)" font-family="Space Mono" font-size="10">PORT 1</text>
       <text x="240" y="35" fill="var(--muted)" font-family="Space Mono" font-size="10">PORT 2</text>
     </svg>
@@ -56,7 +56,7 @@
       <label><span>Z₁ (Series Arm 1)</span> <span id="val-z1" style="display:none;">100 Ω</span></label>
       <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-z1', -1)">-</button><input type="number" id="slider-z1" min="10" max="1000" step="10" value="100"><button type="button" class="btn-step" onclick="stepInputValue('slider-z1', 1)">+</button></div>
     </div>
-    
+
     <div class="control-group">
       <label><span>Z₂ (Series Arm 2)</span> <span id="val-z2" style="display:none;">200 Ω</span></label>
       <div class="number-input-group"><button type="button" class="btn-step" onclick="stepInputValue('slider-z2', -1)">-</button><input type="number" id="slider-z2" min="10" max="1000" step="10" value="200"><button type="button" class="btn-step" onclick="stepInputValue('slider-z2', 1)">+</button></div>
@@ -86,10 +86,9 @@
 <script src="network-analysis/js/scoring.js?v=2"></script>
 <script src="network-analysis/js/hints.js"></script>
 <script src="network-analysis/js/symmetrical.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="js/db.js?v=8"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/db.js?v=9"></script>
 <script src="js/auth.js"></script>
 </body>
 </html>
