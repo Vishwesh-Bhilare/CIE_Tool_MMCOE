@@ -146,10 +146,10 @@
     <button onclick="logoutStudent()" style="background:transparent; border:1px solid rgba(255,51,102,0.6); color:#ff3366; padding:5px 15px; border-radius:4px; cursor:pointer; font-family:'Orbitron'; font-size:0.8rem; transition:all 0.3s;">LOGOUT</button>
   </div>
   <ul class="nav-links">
-    <li><a href="#games">Games</a></li>
+    <li><a href="#test-section">Test</a></li>
+    <li><a href="#games">Simulations</a></li>
     <!-- <li><a href="#formulas">Formulas</a></li> -->
     <li><a href="#how">How It Works</a></li>
-    <li><a href="test.html">Test</a></li>
   </ul>
 </nav>
 
@@ -168,16 +168,41 @@
   </h1>
   <p class="hero-sub">Analyze and Visualize Network Data</p>
   <div class="hero-cta">
-    <a href="#games" class="btn-hero btn-primary">Explore Games →</a>
+    <a href="test.html" class="btn-hero btn-primary">Take Test →</a>
     <!-- <a href="#formulas" class="btn-hero btn-outline">View Formulas</a> -->
-    <a href="test.html" class="btn-hero btn-outline">Take Test</a>
+    <a href="#games" class="btn-hero btn-outline">Explore Simulations</a>
+  </div>
+</section>
+
+<!-- TEST SECTION -->
+<section class="section" id="test-section">
+  <div class="section-hdr">
+    <div class="section-tag">Assessment First</div>
+    <h2 class="section-title">Start Your Random Concept Test</h2>
+  </div>
+  <div class="games-grid">
+
+    <!-- Test Section -->
+    <div class="game-card" style="--cc:#ffe135;--cr:rgba(255,225,53,.06);">
+      <span class="card-tag" style="--ctbg:rgba(255,225,53,.1);--ctc:#ffe135;--ctbd:rgba(255,225,53,.24);">Assessment</span>
+      <div class="card-icon" style="--cibg:rgba(255,225,53,.1);--cibd:rgba(255,225,53,.22);--cishadow:rgba(255,225,53,.18);">📝</div>
+      <div class="card-title">Test Section</div>
+      <div class="card-concept" style="color:#ffe135;">Random Question Test</div>
+      <div class="card-preview" style="display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,225,53,0.35);">2 / 10</div>
+      <div class="card-desc">Take a 45-minute assessment that randomly selects 2 questions from the 10-question Supabase question bank. Supports MCQ, multiple-select, and typed numeric or sentence answers.</div>
+      <div class="card-pills">
+        <span class="pill">45 Minutes</span><span class="pill">Auto Submit</span><span class="pill">Results Saved</span>
+      </div>
+      <a href="test.html" class="card-btn" style="background:linear-gradient(135deg,#ffe135,#ff8c00);color:#050a12;box-shadow:0 0 14px rgba(255,225,53,.28);">▶ Start Test</a>
+    </div>
+
   </div>
 </section>
 
 <!-- GAMES -->
 <section class="section" id="games">
   <div class="section-hdr">
-    <div class="section-tag">Choose Your Challenge</div>
+    <div class="section-tag">Practice Simulations</div>
     <h2 class="section-title">Network Analysis Game Modules</h2>
   </div>
   <div class="games-grid">
@@ -343,19 +368,7 @@
     </div>
 
 
-    <!-- Test Section -->
-    <div class="game-card" style="--cc:#ffe135;--cr:rgba(255,225,53,.06);">
-      <span class="card-tag" style="--ctbg:rgba(255,225,53,.1);--ctc:#ffe135;--ctbd:rgba(255,225,53,.24);">Assessment</span>
-      <div class="card-icon" style="--cibg:rgba(255,225,53,.1);--cibd:rgba(255,225,53,.22);--cishadow:rgba(255,225,53,.18);">📝</div>
-      <div class="card-title">Test Section</div>
-      <div class="card-concept" style="color:#ffe135;">Random Question Test</div>
-      <div class="card-preview" style="display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,225,53,0.35);">2 / 10</div>
-      <div class="card-desc">Take a 45-minute assessment that randomly selects 2 questions from the 10-question Supabase question bank. Supports MCQ, multiple-select, and typed numeric or sentence answers.</div>
-      <div class="card-pills">
-        <span class="pill">45 Minutes</span><span class="pill">Auto Submit</span><span class="pill">Results Saved</span>
-      </div>
-      <a href="test.html" class="card-btn" style="background:linear-gradient(135deg,#ffe135,#ff8c00);color:#050a12;box-shadow:0 0 14px rgba(255,225,53,.28);">▶ Start Test</a>
-    </div>
+
 
   </div>
 </section>
