@@ -4,22 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Network Parameters Matrix – Network Analysis</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="network-analysis/css/network.css">
 <style>
-  .matrix {
-    display: inline-grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 10px 20px;
-    background: var(--surface2);
-    border-left: 2px solid var(--text);
-    border-right: 2px solid var(--text);
-    border-radius: 4px;
-    font-family: 'Space Mono', monospace;
-    font-size: 1.2rem;
-    color: var(--accent);
-  }
+  .matrix { background: #f8fafc; border-left: 2px solid #091540; border-right: 2px solid #091540; color: #1B2CC1; padding: 10px; display: inline-block; }
   .matrix div { text-align: center; }
 </style>
 </head>
@@ -28,11 +16,11 @@
 
 <nav>
   <a href="index.html" class="nav-logo">← DASHBOARD</a>
-  <div class="nav-logo" style="color:var(--accent);">MODULE 03: NETWORK PARAMETERS</div>
+  <div class="nav-logo" style="color:#1B2CC1;">MODULE 03: NETWORK PARAMETERS</div>
 </nav>
 
 <div class="hud">
-  <div class="hud-item student-name-display" style="color:#00ff88;">PLAYER</div>
+  <div class="hud-item student-name-display" style="color:#1B2CC1;">PLAYER</div>
   <div class="hud-item">SCORE: <span id="hud-score">0</span> XP</div>
   <div class="hud-item">LEVEL: <span id="hud-level">1</span></div>
   <div class="hud-timer" id="hud-timer">00:00</div>
@@ -72,15 +60,15 @@
   <div class="simulation-area">
     <div style="display:flex; justify-content:space-around; align-items:center; height: 150px; border-bottom:1px solid rgba(255,255,255,0.05);">
       <div style="text-align:center;">
-        <div style="color:var(--muted); font-size:0.9rem; margin-bottom:10px;">TARGET [Z] MATRIX</div>
-        <div class="matrix" style="color:var(--accent-yellow);">
+        <div style="color:#6b7280; font-size:0.9rem; margin-bottom:10px;">TARGET [Z] MATRIX</div>
+        <div class="matrix" style="color:#7692FF;">
           <div id="tgt-11">0</div><div id="tgt-12">0</div>
           <div id="tgt-21">0</div><div id="tgt-22">0</div>
         </div>
       </div>
 
       <div style="text-align:center;">
-        <div style="color:var(--muted); font-size:0.9rem; margin-bottom:10px;">YOUR [Z] MATRIX</div>
+        <div style="color:#6b7280; font-size:0.9rem; margin-bottom:10px;">YOUR [Z] MATRIX</div>
         <div class="matrix" id="your-matrix">
           <div id="cur-11">0</div><div id="cur-12">0</div>
           <div id="cur-21">0</div><div id="cur-22">0</div>

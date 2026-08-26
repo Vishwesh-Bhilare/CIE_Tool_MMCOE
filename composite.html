@@ -4,23 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Composite Filters Lab – Network Analysis</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="network-analysis/css/network.css">
 <style>
   .block-select {
     width: 100%;
-    background: var(--surface2);
-    color: var(--accent);
-    border: 1px solid rgba(0,255,136,0.3);
+    background: #f8fafc;
+    color: #091540;
+    border: 1px solid #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    border-radius: 8px;
     padding: 10px;
-    font-family: 'Space Mono', monospace;
-    font-size: 1rem;
-    border-radius: 4px;
     outline: none;
     margin-bottom: 15px;
   }
   .block-select:focus {
-    border-color: var(--accent);
+    border-color: #1B2CC1;
   }
 </style>
 </head>
@@ -29,11 +29,11 @@
 
 <nav>
   <a href="index.html" class="nav-logo">← DASHBOARD</a>
-  <div class="nav-logo" style="color:var(--accent);">MODULE 08: COMPOSITE FILTERS</div>
+  <div class="nav-logo" style="color:#1B2CC1;">MODULE 08: COMPOSITE FILTERS</div>
 </nav>
 
 <div class="hud">
-  <div class="hud-item student-name-display" style="color:#00ff88;">PLAYER</div>
+  <div class="hud-item student-name-display" style="color:#1B2CC1;">PLAYER</div>
   <div class="hud-item">SCORE: <span id="hud-score">0</span> XP</div>
   <div class="hud-item">LEVEL: <span id="hud-level">1</span></div>
   <div class="hud-timer" id="hud-timer">00:00</div>
@@ -80,13 +80,13 @@
   </div>
 
   <div class="simulation-area">
-    <div style="display:flex; justify-content:center; align-items:center; height:100px; border-bottom:1px solid rgba(255,255,255,0.05); gap:20px; font-family:'Space Mono'; color:var(--text);">
+    <div style="display:flex; justify-content:center; align-items:center; height:100px; border-bottom:1px solid #e2e8f0; gap:20px; font-family:'Inter', sans-serif; color:#091540;">
       <div>IN</div>
-      <div style="width:50px; height:2px; background:var(--accent);"></div>
-      <div id="block1-vis" style="padding:10px 20px; border:2px solid var(--accent); border-radius:4px; background:var(--surface2);">STAGE 1</div>
-      <div style="width:50px; height:2px; background:var(--accent);"></div>
-      <div id="block2-vis" style="padding:10px 20px; border:2px solid var(--accent); border-radius:4px; background:var(--surface2);">STAGE 2</div>
-      <div style="width:50px; height:2px; background:var(--accent);"></div>
+      <div style="width:50px; height:2px; background:#7692FF;"></div>
+      <div id="block1-vis" style="padding:10px 20px; border:2px solid #7692FF; border-radius:4px; background:#f1f5f9;">STAGE 1</div>
+      <div style="width:50px; height:2px; background:#7692FF;"></div>
+      <div id="block2-vis" style="padding:10px 20px; border:2px solid #7692FF; border-radius:4px; background:#f1f5f9;">STAGE 2</div>
+      <div style="width:50px; height:2px; background:#7692FF;"></div>
       <div>OUT</div>
     </div>
 
