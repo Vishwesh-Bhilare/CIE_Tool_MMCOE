@@ -67,7 +67,7 @@ async function startTest() {
 
     const { data: questions, error: questionError } = await window.supabaseClient
         .from('test_questions')
-        .select('id, question_text, question_type, options, correct_answers, points')
+        .select('id, question_text, question_type, concept_name, game_slug, options, correct_answers, points')
         .eq('is_active', true);
 
     if (questionError || !questions || questions.length < TEST_QUESTION_COUNT) {
@@ -105,19 +105,65 @@ async function startTest() {
     setMessage('');
 }
 
+const SIMULATION_PAGES = {
+    filters: 'filters.html',
+    symmetrical: 'symmetrical.html',
+    parameters: 'parameters.html',
+    open_short: 'open-short.html',
+    asymmetrical: 'asymmetrical.html',
+    twin_t: 'twin-t.html',
+    composite: 'composite.html'
+};
+
+function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value ?? '';
+    return div.innerHTML;
+}
+
+function escapeAttribute(value) {
+    return escapeHtml(value).replace(/&quot;/g, '&amp;quot;').replace(/'/g, '&#39;');
+}
+
+function getSimulationEmbed(question) {
+    const page = SIMULATION_PAGES[question.game_slug];
+    const concept = escapeHtml(question.concept_name || 'Network Analysis Simulation');
+    const conceptAttribute = escapeAttribute(question.concept_name || 'Network Analysis Simulation');
+    if (!page) {
+        return `<aside class="simulation-panel simulation-panel-empty"><strong>${concept}</strong><span>No linked simulation is configured for this question yet.</span></aside>`;
+    }
+
+    return `
+        <aside class="simulation-panel">
+            <div class="simulation-header">
+                <div>
+                    <span class="simulation-label">Linked simulation</span>
+                    <strong>${concept}</strong>
+                </div>
+                <a href="${page}" target="_blank" rel="noopener">Open full screen ↗</a>
+            </div>
+            <iframe title="${conceptAttribute} simulation" src="${page}?embedded=test" loading="lazy"></iframe>
+        </aside>
+    `;
+}
+
 function renderQuestions() {
     $('question-list').innerHTML = currentQuestions.map((q, index) => {
         const options = Array.isArray(q.options) ? q.options : [];
         const inputName = `question-${q.id}`;
         const inputs = q.question_type === 'typed_answer'
             ? `<input class="answer-input" type="text" id="${inputName}" placeholder="Type your sentence or numeric answer">`
-            : options.map((opt) => `
+            : options.map((opt) => {
+                const safeOption = escapeHtml(opt);
+                const safeValue = escapeAttribute(opt);
+                return `
                 <label class="answer-option">
-                    <input type="${q.question_type === 'mcq' ? 'radio' : 'checkbox'}" name="${inputName}" value="${opt}">
-                    <span>${opt}</span>
+                    <input type="${q.question_type === 'mcq' ? 'radio' : 'checkbox'}" name="${inputName}" value="${safeValue}">
+                    <span>${safeOption}</span>
                 </label>
-              `).join('');
-        return `<article class="question-card"><div class="question-kicker">Question ${index + 1} · ${q.question_type.replace('_', ' ')}</div><h2>${q.question_text}</h2><div class="answers">${inputs}</div></article>`;
+              `;
+            }).join('');
+        return `<article class="question-card"><div class="question-kicker">Question ${index + 1} · ${escapeHtml(q.concept_name || 'Network Analysis')} · ${q.question_type.replace('_', ' ')}</div><h2>${escapeHtml(q.question_text)}</h2>${getSimulationEmbed(q)}<div class="answers">${inputs}</div></article>`;
     }).join('');
 }
 
